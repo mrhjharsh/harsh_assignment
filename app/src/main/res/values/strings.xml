@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ContactAssignment</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="contact_name">Contact Name</string>
+</resources>

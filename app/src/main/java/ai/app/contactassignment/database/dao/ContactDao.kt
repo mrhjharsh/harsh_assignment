@@ -9,10 +9,13 @@ import androidx.room.Query
 @Dao
 interface ContactDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertContact(contact: Contact)
 
-    @Query("SELECT * FROM contacts ORDER BY name ASC")
+    @Query("SELECT * FROM contacts WHERE phoneNumber = :phoneNumber LIMIT 1")
+    suspend fun getContactByPhoneNumber(phoneNumber: String): Contact?
+
+    @Query("SELECT * FROM contacts")
     suspend fun getAllContacts(): List<Contact>
 
     @Query("SELECT * FROM contacts WHERE phoneNumber LIKE '%' || :query || '%'")

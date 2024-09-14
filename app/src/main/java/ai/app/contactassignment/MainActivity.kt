@@ -64,18 +64,26 @@ class MainActivity : AppCompatActivity() {
             val nameIndex = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
             val numberIndex = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
 
-            while (it.moveToNext()) {
-                val name = it.getString(nameIndex)
-                val phoneNumber = it.getString(numberIndex)
-                val contact = Contact(name = name, phoneNumber = phoneNumber)
+            // Launch a coroutine to save contacts and load them only after they are saved
+            lifecycleScope.launch {
+                while (it.moveToNext()) {
+                    val name = it.getString(nameIndex)
+                    val phoneNumber = it.getString(numberIndex)
+                    val contact = Contact(name = name, phoneNumber = phoneNumber)
 
-                lifecycleScope.launch {
-                    db.contactDao().insertContact(contact)
+                    // Check if the contact already exists in the database
+                    val existingContact = db.contactDao().getContactByPhoneNumber(phoneNumber)
+                    if (existingContact == null) {
+                        // If the contact does not exist, insert it
+                        db.contactDao().insertContact(contact)
+                    }
                 }
+                it.close()
+
+                // Once all contacts are saved, load them from the database and update UI
+                loadContactsFromDB()
             }
-            it.close()
         }
-        loadContactsFromDB()
     }
 
     private fun loadContactsFromDB() {

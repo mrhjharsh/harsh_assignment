@@ -36,8 +36,8 @@ class MainActivity : AppCompatActivity() {
         db = Room.databaseBuilder(applicationContext, ContactDatabase::class.java, "contacts-db").build()
 
         contactsAdapter = ContactsAdapter(contactList)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = contactsAdapter
+        recyclerViews.layoutManager = LinearLayoutManager(this)
+        recyclerViews.adapter = contactsAdapter
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
             fetchAndSaveContacts()

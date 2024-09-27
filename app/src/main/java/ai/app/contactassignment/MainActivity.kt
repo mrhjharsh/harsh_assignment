@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        Toast.makeText(this, "merging data" , Toast.LENGTH_SHORT).show()
+
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         val searchView = findViewById<SearchView>(R.id.searchView)
 

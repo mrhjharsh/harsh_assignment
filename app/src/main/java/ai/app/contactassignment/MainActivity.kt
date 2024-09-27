@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Toast.makeText(this, "merging data" , Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "merging data new branch" , Toast.LENGTH_SHORT).show()
 
         val recyclerViews = findViewById<RecyclerView>(R.id.recyclerView)
         val searchView = findViewById<SearchView>(R.id.searchView)
@@ -47,34 +47,6 @@ class MainActivity : AppCompatActivity() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                loadContactsFromDB()
-                Toast.makeText(this, "merging data" , Toast.LENGTH_SHORT).show()
-
-                val recyclerViews = findViewById<RecyclerView>(R.id.recyclerView)
-                val searchView = findViewById<SearchView>(R.id.searchView)
-
-                db = Room.databaseBuilder(applicationContext, ContactDatabase::class.java, "contacts-db").build()
-
-                contactsAdapter = ContactsAdapter(contactList)
-                recyclerViews.layoutManager = LinearLayoutManager(this)
-                recyclerViews.adapter = contactsAdapter
-
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-                    fetchAndSaveContacts()
-                } else {
-                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_CONTACTS), 100)
-                }
-
-                searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                    override fun onQueryTextSubmit(query: String?): Boolean {
-                        return false
-                    }
-
-                    override fun onQueryTextChange(newText: String?): Boolean {
-                        searchContacts(newText)
-                        return true
-                    }
-                })
                 return false
             }
 
@@ -83,8 +55,6 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         })
-
-
 
         loadContactsFromDB()
     }
@@ -113,7 +83,39 @@ class MainActivity : AppCompatActivity() {
                 it.close()
 
                 // Once all contacts are saved, load them from the database and update UI
+                loadContactsFromDB()
             }
+        }
+    }
+
+    private fun loadContactsFromDB() {
+        lifecycleScope.launch {
+            val contacts = db.contactDao().getAllContacts()
+            contactList.clear()
+            contactList.addAll(contacts)
+            contactsAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun searchContacts(query: String?) {
+        lifecycleScope.launch {
+            val filteredContacts = if (query.isNullOrEmpty()) {
+                db.contactDao().getAllContacts()
+            } else {
+                db.contactDao().searchContacts(query)
+            }
+            contactList.clear()
+            contactList.addAll(filteredContacts)
+            contactsAdapter.notifyDataSetChanged()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 100 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            fetchAndSaveContacts()
+        } else {
+            Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
         }
     }
 }

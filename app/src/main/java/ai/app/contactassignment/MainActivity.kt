@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Toast.makeText(this, "merging data new branch" , Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "merging data new_branch_1" , Toast.LENGTH_SHORT).show()
 
         val recyclerViews = findViewById<RecyclerView>(R.id.recyclerView)
         val searchView = findViewById<SearchView>(R.id.searchView)

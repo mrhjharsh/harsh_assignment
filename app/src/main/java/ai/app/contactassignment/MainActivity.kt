@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         Toast.makeText(this, "merging data" , Toast.LENGTH_SHORT).show()
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        val recyclerViews = findViewById<RecyclerView>(R.id.recyclerView)
         val searchView = findViewById<SearchView>(R.id.searchView)
 
         db = Room.databaseBuilder(applicationContext, ContactDatabase::class.java, "contacts-db").build()
